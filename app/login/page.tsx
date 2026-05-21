@@ -15,6 +15,9 @@ function LoginContent() {
       provider: "google",
       options: {
         redirectTo: `${globalThis.location.origin}/auth/callback`,
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
   };
