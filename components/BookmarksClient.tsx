@@ -175,17 +175,29 @@ export default function BookmarksClient({ user, initialBookmarks }: Props) {
     setUrlError("");
     setAdding(true);
 
-    const { error } = await supabase.from("bookmarks").insert({
+    const bookmarkToCreate = {
+      user_id: user.id,
       url: cleanUrl,
       title: title.trim(),
       favicon_url: getFavicon(cleanUrl),
       is_pinned: false,
-    });
+    };
+
+    const { data, error } = await supabase
+      .from("bookmarks")
+      .insert(bookmarkToCreate)
+      .select()
+      .single();
 
     setAdding(false);
     if (error) {
       showToast("Failed to add bookmark", "error");
     } else {
+      if (data) {
+        setBookmarks((previousBookmarks) =>
+          upsertBookmark(previousBookmarks, data)
+        );
+      }
       setUrl("");
       setTitle("");
       setShowForm(false);
